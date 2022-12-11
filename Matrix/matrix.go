@@ -6,13 +6,6 @@ import (
 	"math"
 )
 
-type Value interface {
-	int | float64 | float32 | int32
-}
-
-type Row[T Value] []T
-type Diag[T Value] Row[T]
-
 type Matrix[T Value] struct {
 	rows   int
 	cols   int
@@ -25,7 +18,7 @@ func NewMatrix[T Value](rows ...Row[T]) (*Matrix[T], error) {
 	matrix.cols = len(rows[0])
 	for _, row := range rows {
 		if len(row) != matrix.cols {
-			return nil, errors.New("length mismatch")
+			return nil, errors.New("length missmatch")
 		}
 		matrix.values = append(matrix.values, row...)
 	}
@@ -53,8 +46,8 @@ func (M *Matrix[T]) SetElment(i int, j int, v T) {
 }
 
 func (M *Matrix[T]) Print() {
-	for i := 0; i < M.cols; i++ {
-		for j := 0; j < M.rows; j++ {
+	for i := 0; i < M.rows; i++ {
+		for j := 0; j < M.cols; j++ {
 			fmt.Print(M.GetElement(i, j))
 			print(" ")
 		}
@@ -73,7 +66,7 @@ func (M *Matrix[T]) Copy() (matrix *Matrix[T]) {
 	return
 }
 
-func (M *Matrix[T]) DiagonalCopy() (diag Diag[T]) {
+func (M *Matrix[T]) Diagonal() (diag Diag[T]) {
 	diag = make(Diag[T], int(math.Min(float64(M.cols), float64(M.rows))))
 	for i := 0; i < len(diag); i++ {
 		diag[i] = M.GetElement(i, i)
@@ -96,4 +89,15 @@ func (M *Matrix[T]) Multiply(scalar T) {
 	for i := 0; i < len(M.values); i++ {
 		M.values[i] *= scalar
 	}
+}
+
+func (M *Matrix[T]) Transpose() (final *Matrix[T]) {
+	final = M.Copy()
+	final.cols, final.rows = M.rows, M.cols
+	for i := 0; i < final.rows; i++ {
+		for j := 0; j < final.cols; j++ {
+			final.SetElment(i, j, M.GetElement(j, i))
+		}
+	}
+	return
 }
