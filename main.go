@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	. "github.com/hammamikhairi/Matrix/Matrix"
 )
 
@@ -15,11 +17,18 @@ func main() {
 		panic(err)
 	}
 
-	matrix.Print()
+	// matrix.Print()
 
-	matrix.Multiply(7i + 9)
-	matrix.Print()
+	// matrix.Multiply(7i + 9)
+	// matrix.Print()
 
-	matrix.Transpose().Print()
+	// matrix.Transpose().Print()
+
+	fmt.Println(matrix.ComplexReals())
+	fmt.Println(matrix.ComplexImags())
+	fmt.Println(matrix.ComplexApply(func(N complex128) complex128 {
+		fmt.Println(N)
+		return N
+	}))
 
 }

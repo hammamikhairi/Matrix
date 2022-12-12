@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"reflect"
 )
 
 type Matrix[T Value] struct {
@@ -12,8 +13,9 @@ type Matrix[T Value] struct {
 	values []T
 }
 
-func NewMatrix[T Value](rows ...Row[T]) (*Matrix[T], error) {
-	matrix := new(Matrix[T])
+func NewMatrix[T Value](rows ...Row[T]) (matrix *Matrix[T], err error) {
+
+	matrix = new(Matrix[T])
 	matrix.rows = len(rows)
 	matrix.cols = len(rows[0])
 	for _, row := range rows {
@@ -99,5 +101,56 @@ func (M *Matrix[T]) Transpose() (final *Matrix[T]) {
 			final.SetElment(i, j, M.GetElement(j, i))
 		}
 	}
+	return
+}
+
+func (M *Matrix[T]) ComplexReals() (matrix *Matrix[float64]) {
+
+	if !(genericTypeAssert[T, complex128]() || genericTypeAssert[T, complex64]()) {
+		panic("must be complex")
+	}
+
+	matrix = new(Matrix[float64])
+	matrix.cols = M.cols
+	matrix.rows = M.rows
+	matrix.values = make([]float64, matrix.cols*matrix.rows)
+	for i := 0; i < len(matrix.values); i++ {
+		matrix.values[i] = real(reflect.ValueOf(M.values[i]).Complex())
+	}
+
+	return
+}
+
+func (M *Matrix[T]) ComplexImags() (matrix *Matrix[float64]) {
+
+	if !(genericTypeAssert[T, complex128]() || genericTypeAssert[T, complex64]()) {
+		panic("must be complex")
+	}
+
+	matrix = new(Matrix[float64])
+	matrix.cols = M.cols
+	matrix.rows = M.rows
+	matrix.values = make([]float64, matrix.cols*matrix.rows)
+	for i := 0; i < len(matrix.values); i++ {
+		matrix.values[i] = imag(reflect.ValueOf(M.values[i]).Complex())
+	}
+
+	return
+}
+
+func (M *Matrix[T]) ComplexApply(fn ComplexFunction[T]) (matrix *Matrix[T]) {
+
+	if !(genericTypeAssert[T, complex128]() || genericTypeAssert[T, complex64]()) {
+		panic("must be complex")
+	}
+
+	matrix = new(Matrix[T])
+	matrix.cols = M.cols
+	matrix.rows = M.rows
+	matrix.values = make([]T, matrix.cols*matrix.rows)
+	for i := 0; i < len(matrix.values); i++ {
+		matrix.values[i] = fn(reflect.ValueOf(M.values[i]).Complex())
+	}
+
 	return
 }
