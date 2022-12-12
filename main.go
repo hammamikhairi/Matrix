@@ -31,4 +31,10 @@ func main() {
 		return N
 	}))
 
+	mat, _ := NewMatrix(
+		Row[float32]{6.5, 36, 33},
+	)
+
+	fmt.Println(mat.IsFloat())
+
 }

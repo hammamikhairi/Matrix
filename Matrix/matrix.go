@@ -154,3 +154,19 @@ func (M *Matrix[T]) ComplexApply(fn ComplexFunction[T]) (matrix *Matrix[T]) {
 
 	return
 }
+
+func (M *Matrix[T]) IsFloat() bool {
+	return genericTypeAssert[T, float32]() || genericTypeAssert[T, float64]()
+}
+
+func (M *Matrix[T]) IsUInt() bool {
+	return genericTypeAssert[T, uint]() || genericTypeAssert[T, uint8]() || genericTypeAssert[T, uint16]() || genericTypeAssert[T, uint32]() || genericTypeAssert[T, uint64]()
+}
+
+func (M *Matrix[T]) IsInt() bool {
+	return genericTypeAssert[T, int]() || genericTypeAssert[T, int8]() || genericTypeAssert[T, int16]() || genericTypeAssert[T, int32]() || genericTypeAssert[T, int64]() || M.IsUInt()
+}
+
+func (M *Matrix[T]) IsComplex() bool {
+	return genericTypeAssert[T, complex128]() || genericTypeAssert[T, complex64]()
+}
