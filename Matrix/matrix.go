@@ -35,10 +35,6 @@ func (M *Matrix[T]) ColCount() int {
 	return M.cols
 }
 
-func getIndex(i, j, rows int) int {
-	return i*rows + j
-}
-
 func (M *Matrix[T]) GetElement(i, j int) T {
 	return M.values[getIndex(i, j, M.cols)]
 }
@@ -58,10 +54,7 @@ func (M *Matrix[T]) Print() {
 }
 
 func (M *Matrix[T]) Copy() (matrix *Matrix[T]) {
-	matrix = new(Matrix[T])
-	matrix.cols = M.cols
-	matrix.rows = M.rows
-	matrix.values = make([]T, matrix.cols*matrix.rows)
+	matrix = newEmptyMatrix[T](M.rows, M.cols)
 	for i := 0; i < len(matrix.values); i++ {
 		matrix.values[i] = M.values[i]
 	}
@@ -110,10 +103,7 @@ func (M *Matrix[T]) ComplexReals() (matrix *Matrix[float64]) {
 		panic("must be complex")
 	}
 
-	matrix = new(Matrix[float64])
-	matrix.cols = M.cols
-	matrix.rows = M.rows
-	matrix.values = make([]float64, matrix.cols*matrix.rows)
+	matrix = newEmptyMatrix[float64](M.rows, M.cols)
 	for i := 0; i < len(matrix.values); i++ {
 		matrix.values[i] = real(reflect.ValueOf(M.values[i]).Complex())
 	}
@@ -180,4 +170,18 @@ func (M *Matrix[T]) Is(val T) (matrix *BoolMatrix) {
 
 	return
 
+}
+
+func (M *Matrix[T]) Filter(mesh *BoolMatrix) (indeces [][]int) {
+	if M.cols != mesh.cols || M.rows != mesh.rows {
+		panic("wtf bro")
+	}
+
+	for index := range M.values {
+		if mesh.values[index] {
+			indeces = append(indeces, getPosition(index, M.rows, M.cols))
+		}
+	}
+
+	return
 }

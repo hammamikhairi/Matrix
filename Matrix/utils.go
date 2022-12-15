@@ -15,10 +15,19 @@ type Value interface {
 type Row[T Value] []T
 type Diag[T Value] Row[T]
 type ComplexFunction[T Value] func(value T) T
+type ConditionFunction[T Value] func(value T) bool
 
 const (
 	AdditionError = "Incompatible dimentions %d/%d and %d/%d"
 )
+
+func getIndex(i, j, rows int) int {
+	return i*rows + j
+}
+
+func getPosition(index, rows, cols int) []int {
+	return []int{int(index / rows), int(index % cols)}
+}
 
 func checkDimentions[T Value](M, N *Matrix[T]) {
 	if N.cols != M.cols || N.rows != M.rows {
@@ -28,4 +37,12 @@ func checkDimentions[T Value](M, N *Matrix[T]) {
 
 func genericTypeAssert[T Value, Asserted Value]() bool {
 	return reflect.TypeOf(new(T)) == reflect.TypeOf(new(Asserted))
+}
+
+func newEmptyMatrix[T Value](rows, cols int) (matrix *Matrix[T]) {
+	matrix = new(Matrix[T])
+	matrix.cols = cols
+	matrix.rows = rows
+	matrix.values = make([]T, cols*rows)
+	return
 }

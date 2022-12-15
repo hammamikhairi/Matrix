@@ -6,14 +6,14 @@ import (
 
 func main() {
 
-	matrix, err := NewMatrix(
-		Row[complex128]{16i, 7i, 5 + 8i},
-		Row[complex128]{20, 7i, 9},
-		Row[complex128]{17i, 7i, 16i},
-	)
-	if err != nil {
-		panic(err)
-	}
+	// matrix, err := NewMatrix(
+	// 	Row[complex128]{9, 2i, 5 + 8i},
+	// 	Row[complex128]{9, 7i, 9},
+	// 	Row[complex128]{17i, 99, 16i},
+	// )
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	// matrix.Print()
 
@@ -29,10 +29,9 @@ func main() {
 	// 	return N
 	// }))
 
-	// mat, _ := NewMatrix(
-	// 	Row[uint]{6, 36, 33},
-	// )
-
-	matrix.Is(16i).Print()
-
+	matrix, _ := NewMatrix(
+		Row[uint]{6, 36, 33},
+	)
+	matrix.Print()
+	// matrix.ConditionalSet(0, func(val uint) bool { return val >= 30 }).Print()
 }
