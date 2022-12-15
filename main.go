@@ -30,8 +30,14 @@ func main() {
 	// }))
 
 	matrix, _ := NewMatrix(
-		Row[uint]{6, 36, 33},
+		Row[int]{1, 0, -3},
+		Row[int]{-2, 4, 1},
 	)
-	matrix.Print()
-	matrix.ConditionalSet(0, func(val uint) bool { return val >= 30 }).Print()
+	matrix2, _ := NewMatrix(
+		Row[int]{2, -1},
+		Row[int]{3, 0},
+		Row[int]{-5, 2},
+	)
+	Multiply(matrix2, matrix).Print()
+	// matrix.ConditionalSet(0, func(val uint) bool { return val >= 30 }).Print()
 }

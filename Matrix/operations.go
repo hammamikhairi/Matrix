@@ -1,5 +1,7 @@
 package Matrix
 
+import "fmt"
+
 // TODO -> implement These :
 //
 //	flatten() -> return values slice
@@ -42,6 +44,25 @@ func Substract[T Value](M, N *Matrix[T]) (final *Matrix[T]) {
 	final = M.Copy()
 	for i := 0; i < len(M.values); i++ {
 		final.values[i] = M.values[i] - N.values[i]
+	}
+
+	return
+}
+
+func Multiply[T Value](M, N *Matrix[T]) (final *Matrix[T]) {
+
+	assert(M.cols == N.rows, fmt.Sprintf(MultiplicationError, M.rows, M.cols, N.rows, N.cols, M.cols, N.rows))
+
+	final = newEmptyMatrix[T](M.rows, N.cols)
+
+	for i := 0; i < M.rows; i++ {
+		for k := 0; k < N.cols; k++ {
+			localRes := T(0)
+			for j := 0; j < M.cols; j++ {
+				localRes += M.GetElement(i, j) * N.GetElement(j, k)
+			}
+			final.values[getIndex(i, k, M.rows)] = localRes
+		}
 	}
 
 	return
