@@ -57,12 +57,9 @@ func assert(condition bool, msg string) {
 func IdentityMatrix[T Value](rows int) (identity *Matrix[T]) {
 
 	identity = newEmptyMatrix[T](rows, rows)
-	for index := range identity.values {
-		if index%(rows+1) == 0 {
-			identity.values[index] = 1
-		} else {
-			identity.values[index] = 0
-		}
+	for index := 0; index < rows*rows; index += rows + 1 {
+
+		identity.values[index] = 1
 	}
 
 	return
