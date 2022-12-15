@@ -185,3 +185,17 @@ func (M *Matrix[T]) Filter(mesh *BoolMatrix) (indeces [][]int) {
 
 	return
 }
+
+func (M *Matrix[T]) ConditionalSet(value T, condition ConditionFunction[T]) (matrix *Matrix[T]) {
+
+	matrix = newEmptyMatrix[T](M.rows, M.cols)
+	for i := 0; i < len(matrix.values); i++ {
+		if condition(M.values[i]) {
+			matrix.values[i] = M.values[i]
+		} else {
+			matrix.values[i] = value
+		}
+	}
+
+	return
+}

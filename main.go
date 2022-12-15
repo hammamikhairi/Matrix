@@ -33,5 +33,5 @@ func main() {
 		Row[uint]{6, 36, 33},
 	)
 	matrix.Print()
-	// matrix.ConditionalSet(0, func(val uint) bool { return val >= 30 }).Print()
+	matrix.ConditionalSet(0, func(val uint) bool { return val >= 30 }).Print()
 }
