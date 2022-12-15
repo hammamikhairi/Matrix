@@ -3,8 +3,8 @@ package Matrix
 import (
 	"errors"
 	"fmt"
+	"io"
 	"math"
-	"reflect"
 )
 
 type Matrix[T Value] struct {
@@ -69,66 +69,13 @@ func (M *Matrix[T]) Diagonal() (diag Diag[T]) {
 	return
 }
 
-func (M *Matrix[T]) Trace() (sum T) {
-	if M.cols != M.rows {
-		panic("not square!")
-	}
-
-	for i := 0; i < M.rows; i++ {
-		sum += M.GetElement(i, i)
-	}
-	return
-}
-
 func (M *Matrix[T]) Multiply(scalar T) {
 	for i := 0; i < len(M.values); i++ {
 		M.values[i] *= scalar
 	}
 }
 
-func (M *Matrix[T]) Transpose() (final *Matrix[T]) {
-	final = M.Copy()
-	final.cols, final.rows = M.rows, M.cols
-	for i := 0; i < final.rows; i++ {
-		for j := 0; j < final.cols; j++ {
-			final.SetElment(i, j, M.GetElement(j, i))
-		}
-	}
-	return
-}
-
-func (M *Matrix[T]) ComplexReals() (matrix *Matrix[float64]) {
-
-	if !(genericTypeAssert[T, complex128]() || genericTypeAssert[T, complex64]()) {
-		panic("must be complex")
-	}
-
-	matrix = newEmptyMatrix[float64](M.rows, M.cols)
-	for i := 0; i < len(matrix.values); i++ {
-		matrix.values[i] = real(reflect.ValueOf(M.values[i]).Complex())
-	}
-
-	return
-}
-
-func (M *Matrix[T]) ComplexImags() (matrix *Matrix[float64]) {
-
-	if !(genericTypeAssert[T, complex128]() || genericTypeAssert[T, complex64]()) {
-		panic("must be complex")
-	}
-
-	matrix = new(Matrix[float64])
-	matrix.cols = M.cols
-	matrix.rows = M.rows
-	matrix.values = make([]float64, matrix.cols*matrix.rows)
-	for i := 0; i < len(matrix.values); i++ {
-		matrix.values[i] = imag(reflect.ValueOf(M.values[i]).Complex())
-	}
-
-	return
-}
-
-func (M *Matrix[T]) Apply(fn ComplexFunction[T]) (matrix *Matrix[T]) {
+func (M *Matrix[T]) Apply(fn SomeFunction[T]) (matrix *Matrix[T]) {
 
 	matrix = new(Matrix[T])
 	matrix.cols = M.cols
@@ -157,7 +104,17 @@ func (M *Matrix[T]) IsComplex() bool {
 	return genericTypeAssert[T, complex128]() || genericTypeAssert[T, complex64]()
 }
 
-func (M *Matrix[T]) Is(val T) (matrix *BoolMatrix) {
+func (M *Matrix[T]) HasValue(val T) bool {
+	for _, value := range M.values {
+		if value == val {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (M *Matrix[T]) ValueInMatrix(val T) (matrix *BoolMatrix) {
 
 	matrix = new(BoolMatrix)
 	matrix.rows = M.rows
@@ -172,14 +129,32 @@ func (M *Matrix[T]) Is(val T) (matrix *BoolMatrix) {
 
 }
 
-func (M *Matrix[T]) Filter(mesh *BoolMatrix) (indeces [][]int) {
+func (M *Matrix[T]) Filter(mesh *BoolMatrix) (values []T) {
 	if M.cols != mesh.cols || M.rows != mesh.rows {
 		panic("wtf bro")
 	}
 
 	for index := range M.values {
 		if mesh.values[index] {
-			indeces = append(indeces, getPosition(index, M.rows, M.cols))
+			values = append(values, M.values[index])
+		}
+	}
+
+	return
+}
+
+func (M *Matrix[T]) FilterByCondition(condition ConditionFunction[T]) (matrix *BoolMatrix) {
+
+	matrix = new(BoolMatrix)
+	matrix.rows = M.rows
+	matrix.cols = M.cols
+	matrix.values = make([]bool, matrix.rows*matrix.cols)
+
+	for i := 0; i < len(matrix.values); i++ {
+		if condition(M.values[i]) {
+			matrix.values[i] = true
+		} else {
+			matrix.values[i] = false
 		}
 	}
 
@@ -198,4 +173,53 @@ func (M *Matrix[T]) ConditionalSet(value T, condition ConditionFunction[T]) (mat
 	}
 
 	return
+}
+
+func (M *Matrix[T]) IsEqualTo(N *Matrix[T]) bool {
+
+	if M.cols != N.cols || M.rows != N.rows {
+		return false
+	}
+
+	for index := range M.values {
+		if M.values[index] != N.values[index] {
+			return false
+		}
+	}
+	return true
+}
+
+func (M *Matrix[T]) Flatten() []T {
+	return M.values
+}
+
+func (M *Matrix[T]) Shape() []int {
+	return []int{M.rows, M.cols}
+}
+
+func (M *Matrix[T]) Size() int {
+	return M.cols * M.rows
+}
+
+func (M *Matrix[T]) Reshape(rows, cols int) (*Matrix[T], error) {
+	assert(M.Size() == rows*cols, ReshapeError)
+
+	reshaped := M.Copy()
+	reshaped.rows, reshaped.cols = rows, cols
+
+	return reshaped, nil
+}
+
+func (M *Matrix[T]) ToFile(stream io.ByteWriter) error {
+	for i := 0; i < M.rows; i++ {
+		for j := 0; j < M.cols; j++ {
+			for _, byt := range fmt.Sprint(M.GetElement(i, j)) {
+				stream.WriteByte(byte(byt))
+			}
+			// print(" ")
+		}
+		// print("\n")
+	}
+
+	return nil
 }
