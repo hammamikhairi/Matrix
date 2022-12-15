@@ -32,12 +32,18 @@ func main() {
 	matrix, _ := NewMatrix(
 		Row[int]{1, 0, -3},
 		Row[int]{-2, 4, 1},
+		Row[int]{-5, 0, 3},
 	)
-	matrix2, _ := NewMatrix(
-		Row[int]{2, -1},
-		Row[int]{3, 0},
-		Row[int]{-5, 2},
-	)
-	Multiply(matrix2, matrix).Print()
+	// matrix2, _ := NewMatrix(
+	// 	Row[int]{2, -1, 0},
+	// 	Row[int]{3, 0, 0},
+	// 	Row[int]{-5, 2, 0},
+	// )
+	// identity, _ := NewMatrix(
+	// 	Row[int]{1, 0, 0},
+	// 	Row[int]{0, 1, 0},
+	// 	Row[int]{0, 0, 1},
+	// )
+	Multiply(IdentityMatrix[int](3), matrix).Print()
 	// matrix.ConditionalSet(0, func(val uint) bool { return val >= 30 }).Print()
 }
