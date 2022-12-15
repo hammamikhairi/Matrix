@@ -18,7 +18,8 @@ type ComplexFunction[T Value] func(value T) T
 type ConditionFunction[T Value] func(value T) bool
 
 const (
-	AdditionError = "Incompatible dimentions %d/%d and %d/%d"
+	AdditionError       = "Incompatible dimentions %d/%d and %d/%d for addition."
+	MultiplicationError = "Cant multiply %d/%d by %d/%d; %d and %d must match."
 )
 
 func getIndex(i, j, rows int) int {
@@ -45,4 +46,10 @@ func newEmptyMatrix[T Value](rows, cols int) (matrix *Matrix[T]) {
 	matrix.rows = rows
 	matrix.values = make([]T, cols*rows)
 	return
+}
+
+func assert(condition bool, msg string) {
+	if !condition {
+		panic(msg)
+	}
 }
