@@ -138,18 +138,14 @@ func (M *Matrix[T]) ComplexImags() (matrix *Matrix[float64]) {
 	return
 }
 
-func (M *Matrix[T]) ComplexApply(fn ComplexFunction[T]) (matrix *Matrix[T]) {
-
-	if !(genericTypeAssert[T, complex128]() || genericTypeAssert[T, complex64]()) {
-		panic("must be complex")
-	}
+func (M *Matrix[T]) Apply(fn ComplexFunction[T]) (matrix *Matrix[T]) {
 
 	matrix = new(Matrix[T])
 	matrix.cols = M.cols
 	matrix.rows = M.rows
 	matrix.values = make([]T, matrix.cols*matrix.rows)
 	for i := 0; i < len(matrix.values); i++ {
-		matrix.values[i] = fn(reflect.ValueOf(M.values[i]).Complex())
+		matrix.values[i] = fn(M.values[i])
 	}
 
 	return
@@ -169,4 +165,19 @@ func (M *Matrix[T]) IsInt() bool {
 
 func (M *Matrix[T]) IsComplex() bool {
 	return genericTypeAssert[T, complex128]() || genericTypeAssert[T, complex64]()
+}
+
+func (M *Matrix[T]) Is(val T) (matrix *BoolMatrix) {
+
+	matrix = new(BoolMatrix)
+	matrix.rows = M.rows
+	matrix.cols = M.cols
+	matrix.values = make([]bool, matrix.rows*matrix.cols)
+
+	for index, value := range M.values {
+		matrix.values[index] = value == val
+	}
+
+	return
+
 }

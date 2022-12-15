@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
-
 	. "github.com/hammamikhairi/Matrix/Matrix"
 )
 
 func main() {
 
 	matrix, err := NewMatrix(
-		Row[complex128]{2, 7i, 5 + 8i},
+		Row[complex128]{16i, 7i, 5 + 8i},
 		Row[complex128]{20, 7i, 9},
 		Row[complex128]{17i, 7i, 16i},
 	)
@@ -24,17 +22,17 @@ func main() {
 
 	// matrix.Transpose().Print()
 
-	fmt.Println(matrix.ComplexReals())
-	fmt.Println(matrix.ComplexImags())
-	fmt.Println(matrix.ComplexApply(func(N complex128) complex128 {
-		fmt.Println(N)
-		return N
-	}))
+	// fmt.Println(matrix.ComplexReals())
+	// fmt.Println(matrix.ComplexImags())
+	// fmt.Println(matrix.ComplexApply(func(N complex128) complex128 {
+	// 	fmt.Println(N)
+	// 	return N
+	// }))
 
-	mat, _ := NewMatrix(
-		Row[float32]{6.5, 36, 33},
-	)
+	// mat, _ := NewMatrix(
+	// 	Row[uint]{6, 36, 33},
+	// )
 
-	fmt.Println(mat.IsFloat())
+	matrix.Is(16i).Print()
 
 }

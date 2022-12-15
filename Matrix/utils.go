@@ -14,7 +14,7 @@ type Value interface {
 
 type Row[T Value] []T
 type Diag[T Value] Row[T]
-type ComplexFunction[T Value] func(value complex128) T
+type ComplexFunction[T Value] func(value T) T
 
 const (
 	AdditionError = "Incompatible dimentions %d/%d and %d/%d"
